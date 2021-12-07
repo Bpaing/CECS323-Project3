@@ -58,7 +58,7 @@ public class Instantiate {
     //Helper methods that initialize the default values for each class.
     //Because the number of objects are predefined, arrays are preferred to lists.
 
-    private static Semester[] createSemesters(EntityManager em) {
+    private static Semester[] createSemesters() {
         Semester[] sem = new Semester[3];
         sem[0] = new Semester("Spring 2021", LocalDate.of(2021, 1, 19));
         sem[1] = new Semester("Fall 2021", LocalDate.of(2021, 8, 17));
