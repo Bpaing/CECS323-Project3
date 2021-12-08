@@ -2,7 +2,10 @@ package enterprise;
 
 import jakarta.persistence.*;
 
-import java.util.*;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.List;
+import java.util.ArrayList;
 
 @Entity(name = "STUDENTS")
 public class Student
@@ -78,17 +81,17 @@ public class Student
         for(Transcript t : grades) {
             byte units = t.getSection().getCourse().getUnits();
             unitSum += units;
-            switch(t.getGradeEarned()) {
-                case "A":
+            switch(t.getGradeEarned().charAt(0)) {
+                case 'A':
                     pointSum += 4 * units;
                     break;
-                case "B":
+                case 'B':
                     pointSum += 3 * units;
                     break;
-                case "C":
+                case 'C':
                     pointSum += 2 * units;
                     break;
-                case "D":
+                case 'D':
                     pointSum += 1 * units;
                     break;
             }
@@ -106,8 +109,8 @@ public class Student
             char letterGrade = t.getGradeEarned().charAt(0);
 
             //Courses are the same, passing grade
-            if (attemptedCourse.getCourseID() == otherCourse.getCourseID() && letterGrade <= 'C') {
-                System.out.println("Failed: The student has already received a \"C\" or better in the course.");
+            if (attemptedCourse.equals(otherCourse) && letterGrade <= 'C') {
+                System.out.println("Failed: The student has already received a \"C\" or better in the course.\n");
                 return RegistrationResult.ALREADY_PASSED;
             }
 
@@ -116,29 +119,30 @@ public class Student
             if (!prerequisitesMet.isEmpty()) {
                 for (int i = 0; i < prerequisitesMet.size(); i++) {
                     Prerequisite p = prerequisitesMet.get(i);
-                    if (p.getRequired().getCourseID() == otherCourse.getCourseID() && letterGrade <= p.getMinimumGrade()) {
+                    if (p.getRequired().equals(otherCourse) && letterGrade <= p.getMinimumGrade()) {
                         prerequisitesMet.remove(p);
                     }
                 }
             }
         }
 
-        //Prerequisites not fulfilled after checking all Transcripts
+        //Prerequisites not fulfilled after checking all transcript grades
         if (!prerequisitesMet.isEmpty()) {
-            System.out.println("Failed: The student has not met the course prerequisites.");
+            System.out.println("Failed: The student has not met the course prerequisites.\n");
             return RegistrationResult.NO_PREREQUISITES;
         }
+
 
         //Iterate through enrollments
         for (Section otherSection : enrolledSections) {
             //Courses are the same
-            if (attemptedCourse.getCourseID() == otherSection.getCourse().getCourseID()) {
+            if (attemptedCourse.equals(otherSection.getCourse())) {
                 //Check section numbers
                 if (attemptedSection.getSectionNumber() == otherSection.getSectionNumber()) {
-                    System.out.println("Failed: The student is already enrolled in the section.");
+                    System.out.println("Failed: The student is already enrolled in the section.\n");
                     return RegistrationResult.ENROLLED_IN_SECTION;
                 }
-                System.out.println("Failed: The student is enrolled in a different section of that course.");
+                System.out.println("Failed: The student is enrolled in a different section of that course.\n");
                 return RegistrationResult.ENROLLED_IN_ANOTHER;
             }
 
@@ -149,11 +153,11 @@ public class Student
                 TimeSlot a = attemptedSection.getTimeslot();
                 TimeSlot b = otherSection.getTimeslot();
 
-                //(Times Overlap) || (Start or End Times are Equal)
+                //(Time overlap) || (Start/End times are equal)
                 if (!(a.getStartTime().isBefore(b.getEndTime()) && a.getEndTime().isAfter(b.getStartTime())) ||
                         (a.getStartTime().equals(b.getStartTime()) || (a.getEndTime().equals(b.getEndTime())))) {
                     System.out.println("Failed: The student is enrolled in another course section with a time " +
-                            "conflict.");
+                            "conflict.\n");
                     return RegistrationResult.TIME_CONFLICT;
                 }
             }
@@ -161,7 +165,7 @@ public class Student
 
         //No other results have been returned, mutate sets. Success!
         addSection(attemptedSection);
-        System.out.println("Successfully registered section.");
+        System.out.println("Successfully registered section.\n");
         return RegistrationResult.SUCCESS;
     }
 }

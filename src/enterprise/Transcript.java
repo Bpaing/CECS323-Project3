@@ -52,7 +52,7 @@ public class Transcript implements Comparable<Transcript>
 
     @Override
     public int compareTo(Transcript t){
-        //Order: Semester Start Date -> Course Abbreviation -> Course Number
+        //Ordering Priority: Semester Start Date -> Course Abbreviation -> Course Number
         if (this.getSection().getSemester().getStartDate().compareTo(t.getSection().getSemester().getStartDate()) == 0) {
             if (this.getSection().getCourse().getNumber().compareTo(t.getSection().getCourse().getNumber()) == 0)
                 this.getSection().getCourse().getDepartment().getAbbreviation().compareTo(t.getSection().getCourse().getDepartment().getAbbreviation());

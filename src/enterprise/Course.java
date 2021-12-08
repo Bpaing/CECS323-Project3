@@ -82,4 +82,12 @@ public class Course
     public void setDepartment(Department department) { this.department = department; }
 
     public void addDepartment(Department d) { d.addCourse(this); }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || this.getClass() != o.getClass())
+            return false;
+        Course other = (Course) o;
+        return this.getCourseID() == other.getCourseID();
+    }
 }

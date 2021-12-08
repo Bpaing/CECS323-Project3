@@ -1,4 +1,3 @@
-import instantiate.*;
 import enterprise.*;
 import jakarta.persistence.*;
 
@@ -65,9 +64,10 @@ public class Registration {
     }
 
     public static void registerForCourse(EntityManager em) {
+        String input;
+
         //Choose Semester
         Semester selectedSemester = null;
-        String input;
         while (selectedSemester == null) {
             System.out.print("\nEnter a Semester by title: ");
             input = in.nextLine();
@@ -91,23 +91,25 @@ public class Registration {
                     "number] | Example: CECS 277-05");
             input = in.nextLine();
             String[] parse = input.split("[ -]");
-            String abbreviation = parse[0];
-            String courseNumber = parse[1];
-            byte sectionNumber = (byte) Integer.parseInt(parse[2]);
-            var query = em.createQuery("SELECT s from SECTIONS s " +
-                    "JOIN s.course c JOIN c.department d " +
-                    "WHERE d.abbreviation = ?1 AND c.number = ?2 AND s.sectionNumber = ?3", Section.class);
-            query.setParameter(1, abbreviation.toUpperCase());
-            query.setParameter(2, courseNumber);
-            query.setParameter(3, sectionNumber);
-            try {
-                selectedSection = query.getSingleResult();
-                if (!(selectedSection.getSemester().equals(selectedSemester))) {
-                    System.out.printf("%s is not being offered in %s.\n", input, selectedSemester.getTitle());
-                    selectedSection = null;
+            if (parse.length == 3) {
+                String abbreviation = parse[0];
+                String courseNumber = parse[1];
+                byte sectionNumber = Byte.parseByte(parse[2]);
+                var query = em.createQuery("SELECT s from SECTIONS s " +
+                        "JOIN s.course c JOIN c.department d " +
+                        "WHERE d.abbreviation = ?1 AND c.number = ?2 AND s.sectionNumber = ?3", Section.class);
+                query.setParameter(1, abbreviation.toUpperCase());
+                query.setParameter(2, courseNumber);
+                query.setParameter(3, sectionNumber);
+                try {
+                    selectedSection = query.getSingleResult();
+                    if (!(selectedSection.getSemester().equals(selectedSemester))) {
+                        System.out.printf("%s is not being offered in %s.\n", input, selectedSemester.getTitle());
+                        selectedSection = null;
+                    }
+                } catch (NoResultException e) {
+                    System.out.printf("%s was not found in the database.\n", input);
                 }
-            } catch (NoResultException e) {
-                System.out.printf("%s was not found in the database.\n", input);
             }
         }
 
@@ -116,6 +118,7 @@ public class Registration {
                 selectedSection.getCourse().getNumber(), selectedSection.getSectionNumber());
         System.out.printf("Attempting to register %s for %s.....\n", formatted, selectedStudent.getName());
         em.getTransaction().begin();
+        //Function logic will only mutate model if successful.
         selectedStudent.registerForSection(selectedSection);
         em.getTransaction().commit();
     }

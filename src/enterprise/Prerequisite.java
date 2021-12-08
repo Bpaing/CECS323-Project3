@@ -6,8 +6,7 @@ import jakarta.persistence.*;
 public class Prerequisite
 {
     //Table attributes
-    @Id
-    @Column()
+    @Column(nullable = false)
     private char minimumGrade;
 
 
@@ -38,6 +37,8 @@ public class Prerequisite
     public char getMinimumGrade() {
         return minimumGrade;
     }
+
+    public void setMinimumGrade(char minimumGrade) { this.minimumGrade = minimumGrade; }
 
     public Course getRequired() { return required; }
 

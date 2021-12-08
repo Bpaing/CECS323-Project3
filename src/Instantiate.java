@@ -1,5 +1,3 @@
-package instantiate;
-
 import enterprise.*;
 import jakarta.persistence.*;
 
@@ -11,9 +9,7 @@ public class Instantiate {
     private static boolean alreadyInstantiated = false;
 
     public static void instantiateModel(EntityManager em) {
-        if (alreadyInstantiated) {
-            System.out.println("\nThis database has already been instantiated. Skipping...\n");
-        } else {
+        try {
             em.getTransaction().begin();
             Semester[] semesters = createSemesters();
             Department[] departments = createDepartments();
@@ -51,6 +47,8 @@ public class Instantiate {
 
             System.out.println("\nDatabase instantiated.\n");
             alreadyInstantiated = true;
+        } catch (RollbackException e) {
+            System.out.println("\nThis database has already been instantiated. Skipping...\n");
         }
     }
 
