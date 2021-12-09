@@ -6,8 +6,6 @@ import java.time.LocalTime;
 
 public class Instantiate {
 
-    private static boolean alreadyInstantiated = false;
-
     public static void instantiateModel(EntityManager em) {
         try {
             em.getTransaction().begin();
@@ -44,9 +42,7 @@ public class Instantiate {
             for (Transcript t : transcripts)
                 em.persist(t);
             em.getTransaction().commit();
-
             System.out.println("\nDatabase instantiated.\n");
-            alreadyInstantiated = true;
         } catch (RollbackException e) {
             System.out.println("\nThis database has already been instantiated. Skipping...\n");
         }
