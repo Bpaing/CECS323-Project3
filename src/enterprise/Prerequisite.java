@@ -15,9 +15,8 @@ public class Prerequisite
     @Id
     @ManyToOne
     @JoinColumn
-    private Course required;
+    private Course requiredCourse;
 
-    //Course that can be taken after passing required Course.
     @Id
     @ManyToOne
     @JoinColumn
@@ -27,9 +26,9 @@ public class Prerequisite
     //Object methods
     public Prerequisite() {}
 
-    public Prerequisite(char minimumGrade, Course required, Course requiredFor) {
+    public Prerequisite(char minimumGrade, Course requiredCourse, Course requiredFor) {
         this.minimumGrade = minimumGrade;
-        this.required = required;
+        this.requiredCourse = requiredCourse;
         this.requiredFor = requiredFor;
         requiredFor.getPrerequisites().add(this);
     }
@@ -40,7 +39,7 @@ public class Prerequisite
 
     public void setMinimumGrade(char minimumGrade) { this.minimumGrade = minimumGrade; }
 
-    public Course getRequired() { return required; }
+    public Course getRequiredCourse() { return requiredCourse; }
 
     public Course getRequiredFor() { return requiredFor; }
 

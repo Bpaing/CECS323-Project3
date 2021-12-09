@@ -103,36 +103,6 @@ public class Student
         Course attemptedCourse = attemptedSection.getCourse();
         List<Prerequisite> prerequisitesMet = new ArrayList<>(attemptedCourse.getPrerequisites());
 
-        //Iterate through transcripts
-        for (Transcript t : this.grades) {
-            Course otherCourse = t.getSection().getCourse();
-            char letterGrade = t.getGradeEarned().charAt(0);
-
-            //Courses are the same, passing grade
-            if (attemptedCourse.equals(otherCourse) && letterGrade <= 'C') {
-                System.out.println("Failed: The student has already received a \"C\" or better in the course.\n");
-                return RegistrationResult.ALREADY_PASSED;
-            }
-
-            //Check if course is part of prerequisites + passing grade
-            //If all prerequisites are met, the list will be empty after the for loop.
-            if (!prerequisitesMet.isEmpty()) {
-                for (int i = 0; i < prerequisitesMet.size(); i++) {
-                    Prerequisite p = prerequisitesMet.get(i);
-                    if (p.getRequired().equals(otherCourse) && letterGrade <= p.getMinimumGrade()) {
-                        prerequisitesMet.remove(p);
-                    }
-                }
-            }
-        }
-
-        //Prerequisites not fulfilled after checking all transcript grades
-        if (!prerequisitesMet.isEmpty()) {
-            System.out.println("Failed: The student has not met the course prerequisites.\n");
-            return RegistrationResult.NO_PREREQUISITES;
-        }
-
-
         //Iterate through enrollments
         for (Section otherSection : enrolledSections) {
             //Courses are the same
@@ -162,6 +132,36 @@ public class Student
                 }
             }
         }
+
+        //Iterate through transcripts
+        for (Transcript t : this.grades) {
+            Course otherCourse = t.getSection().getCourse();
+            char letterGrade = t.getGradeEarned().charAt(0);
+
+            //Courses are the same, passing grade
+            if (attemptedCourse.equals(otherCourse) && letterGrade <= 'C') {
+                System.out.println("Failed: The student has already received a \"C\" or better in the course.\n");
+                return RegistrationResult.ALREADY_PASSED;
+            }
+
+            //Check if course is part of prerequisites + passing grade
+            //If all prerequisites are met, the list will be empty after the for loop.
+            if (!prerequisitesMet.isEmpty()) {
+                for (int i = 0; i < prerequisitesMet.size(); i++) {
+                    Prerequisite p = prerequisitesMet.get(i);
+                    if (p.getRequiredCourse().equals(otherCourse) && letterGrade <= p.getMinimumGrade()) {
+                        prerequisitesMet.remove(p);
+                    }
+                }
+            }
+        }
+
+        //Prerequisites not fulfilled after checking all transcript grades
+        if (!prerequisitesMet.isEmpty()) {
+            System.out.println("Failed: The student has not met the course prerequisites.\n");
+            return RegistrationResult.NO_PREREQUISITES;
+        }
+
 
         //No other results have been returned, mutate sets. Success!
         addSection(attemptedSection);

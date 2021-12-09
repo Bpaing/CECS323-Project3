@@ -31,7 +31,7 @@ public class Course
 
     //Associations
     //Course -> Course (Prerequisite) - unidirectional
-    @OneToMany(mappedBy = "required")
+    @OneToMany(mappedBy = "requiredCourse")
     private Set<Prerequisite> prerequisites;
 
     //Course - Department - bidirectional
@@ -85,6 +85,8 @@ public class Course
 
     @Override
     public boolean equals(Object o) {
+        if (this == o)
+            return true;
         if (o == null || this.getClass() != o.getClass())
             return false;
         Course other = (Course) o;
